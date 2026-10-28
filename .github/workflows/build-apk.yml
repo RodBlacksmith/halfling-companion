@@ -38,6 +38,22 @@ jobs:
           )
           p.write_text(s)
           PY
+
+          
+      - name: Allow remote model loading
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("halfling-overlay-android/app/src/main/java/com/dalvenor/halfling/OverlayService.kt")
+          s = p.read_text()
+          old = "web.settings.allowFileAccess = true"
+          new = old + """
+                  web.settings.allowUniversalAccessFromFileURLs = true
+                  web.settings.allowFileAccessFromFileURLs = true"""
+          if old not in s:
+              raise SystemExit("WebView settings line not found")
+          p.write_text(s.replace(old, new, 1))
+          PY
           
 
       - uses: actions/setup-java@v4
